@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Grand Line Voyage: Year 2 Quest</title>
-  <!-- Cute Fonts: Press Start 2P, ZCOOL KuaiLe & Zen Maru Gothic -->
+  <!-- Fonts: Press Start 2P, ZCOOL KuaiLe & Zen Maru Gothic -->
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=ZCOOL+KuaiLe&family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
   <style>
     * {
@@ -29,7 +29,6 @@
       overflow-x: hidden;
     }
 
-    /* Deck Container */
     .deck-container {
       perspective: 1000px;
       width: 100%;
@@ -37,11 +36,10 @@
       margin-top: 10px;
     }
 
-    /* OPCG Card Styling */
     .opcg-card {
       background: #fdf6e2;
-      border: 6px solid #d4af37; /* Metallic Gold Border */
-      outline: 3px solid #3d2612; /* Dark Wood Outline */
+      border: 6px solid #d4af37;
+      outline: 3px solid #3d2612;
       border-radius: 12px;
       padding: 18px;
       width: 100%;
@@ -52,7 +50,6 @@
       margin-bottom: 25px;
     }
 
-    /* Card Draw Animation */
     .draw-card-anim {
       animation: drawCard 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
     }
@@ -68,7 +65,6 @@
       }
     }
 
-    /* OPCG Card Header & Badges */
     .card-header {
       display: flex;
       justify-content: space-between;
@@ -98,7 +94,6 @@
       text-transform: uppercase;
     }
 
-    /* First Page Couple Header Banner */
     .couple-banner {
       background: linear-gradient(135deg, #fff3b0 0%, #ffd166 100%);
       border: 2px solid #3d2612;
@@ -129,7 +124,6 @@
       margin: 12px 0;
     }
 
-    /* Buttons */
     .pixel-btn {
       background-color: #d32f2f;
       color: #ffffff;
@@ -160,7 +154,6 @@
 
     .hidden { display: none !important; }
 
-    /* Centered Photo Deck Container */
     .photo-deck-container {
       position: relative;
       width: 100%;
@@ -280,7 +273,7 @@
       <div class="card-header">
         <span class="card-cost" id="memory-date-badge">DATE</span>
         <span class="card-type">LOG POSE MEMORY</span>
-        <span id="memory-counter">1/15</span>
+        <span id="memory-counter">1/17</span>
       </div>
       <h1 id="memory-title">Memory Title</h1>
       <p id="memory-message">Memory message...</p>
@@ -330,7 +323,6 @@
     let photoIndex = 0;
     let activePhotos = [];
 
-    // Global Store to record responses
     let userFeedback = {
       quizAnswers: {},
       logbookComments: {}
@@ -501,10 +493,27 @@
 
       for (let i = 0; i < Math.min(3, activePhotos.length); i++) {
         let actualIdx = (photoIndex + i) % activePhotos.length;
+        let originalPath = activePhotos[actualIdx];
         let img = document.createElement('img');
-        img.src = activePhotos[actualIdx];
+        img.src = originalPath;
         img.className = 'photo-card ' + (i === 0 ? 'card-top' : i === 1 ? 'card-mid' : 'card-back');
-        img.onerror = function() { this.alt = 'Image not found: ' + activePhotos[actualIdx]; };
+
+        // Auto-recovering onerror handler
+        img.onerror = function() {
+          if (!this.dataset.retry) {
+            this.dataset.retry = "1";
+            this.src = './' + originalPath;
+          } else if (this.dataset.retry === "1") {
+            this.dataset.retry = "2";
+            if (originalPath.endsWith('.JPG')) this.src = originalPath.replace('.JPG', '.jpg');
+            else if (originalPath.endsWith('.jpg')) this.src = originalPath.replace('.jpg', '.JPG');
+            else if (originalPath.endsWith('.JPEG')) this.src = originalPath.replace('.JPEG', '.jpeg');
+            else if (originalPath.endsWith('.jpeg')) this.src = originalPath.replace('.jpeg', '.JPEG');
+          } else {
+            this.alt = 'Image not found: ' + originalPath;
+          }
+        };
+
         container.appendChild(img);
       }
 
