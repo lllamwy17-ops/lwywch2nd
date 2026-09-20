@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grand Line Voyage: Year 2 Quest</title>
+  <!-- Cute Fonts: Press Start 2P, ZCOOL KuaiLe & Zen Maru Gothic -->
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=ZCOOL+KuaiLe&family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #0b2545;
+      background-image: 
+        radial-gradient(#134074 2px, transparent 2px),
+        radial-gradient(#134074 2px, #0b2545 2px);
+      background-size: 20px 20px;
+      background-position: 0 0, 10px 10px;
+      color: #3d2612;
+      font-family: 'ZCOOL KuaiLe', 'Zen Maru Gothic', sans-serif;
+      margin: 0;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Deck Container */
+    .deck-container {
+      perspective: 1000px;
+      width: 100%;
+      max-width: 440px;
+      margin-top: 10px;
+    }
+
+    /* OPCG Card Styling */
+    .opcg-card {
+      background: #fdf6e2;
+      border: 6px solid #d4af37; /* Metallic Gold Border */
+      outline: 3px solid #3d2612; /* Dark Wood Outline */
+      border-radius: 12px;
+      padding: 18px;
+      width: 100%;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.6), 0 0 15px rgba(212, 175, 55, 0.4);
+      position: relative;
+      text-align: center;
+      transform-style: preserve-3d;
+      margin-bottom: 25px;
+    }
+
+    /* Card Draw Animation */
+    .draw-card-anim {
+      animation: drawCard 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    @keyframes drawCard {
+      0% {
+        opacity: 0;
+        transform: translateY(120px) scale(0.6) rotate(-12deg);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1) rotate(0deg);
+      }
+    }
+
+    /* OPCG Card Header & Badges */
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #111;
+      color: #ffd700;
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 2px solid #d4af37;
+      margin-bottom: 12px;
+    }
+
+    .card-cost {
+      background: #b71c1c;
+      color: #fff;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 50%;
+      border: 2px solid #ffd700;
+    }
+
+    .card-type {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 9px;
+      color: #ffb703;
+      text-transform: uppercase;
+    }
+
+    /* First Page Couple Header Banner */
+    .couple-banner {
+      background: linear-gradient(135deg, #fff3b0 0%, #ffd166 100%);
+      border: 2px solid #3d2612;
+      border-radius: 20px;
+      padding: 6px 18px;
+      display: inline-block;
+      margin: 6px 0 12px 0;
+      font-size: 16px;
+      font-weight: bold;
+      color: #3d2612;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.2), inset 0 0 4px rgba(255,255,255,0.8);
+      letter-spacing: 1px;
+    }
+
+    h1 { 
+      font-size: 19px; 
+      color: #b71c1c; 
+      margin: 10px 0; 
+      text-shadow: 1px 1px 0px #ffb703;
+      line-height: 1.4;
+    }
+
+    p { 
+      font-size: 14px; 
+      color: #4a2c11; 
+      line-height: 1.85; 
+      letter-spacing: 0.3px;
+      margin: 12px 0;
+    }
+
+    /* Buttons */
+    .pixel-btn {
+      background-color: #d32f2f;
+      color: #ffffff;
+      border: 3px solid #7f0000;
+      padding: 12px 18px;
+      font-family: 'ZCOOL KuaiLe', 'Zen Maru Gothic', sans-serif;
+      font-size: 14px;
+      cursor: pointer;
+      margin: 8px 0;
+      box-shadow: 0 4px 0 #4a0000;
+      width: 100%;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
+      transition: all 0.1s ease;
+    }
+
+    .pixel-btn:hover {
+      background-color: #ffb703;
+      border-color: #b58100;
+      color: #3d2612;
+      box-shadow: 0 4px 0 #785500;
+    }
+
+    .pixel-btn:active {
+      box-shadow: 0 0 0 #4a0000;
+      transform: translateY(4px);
+    }
+
+    .hidden { display: none !important; }
+
+    /* Centered Photo Deck Container */
+    .photo-deck-container {
+      position: relative;
+      width: 100%;
+      max-width: 320px;
+      height: 260px;
+      margin: 15px auto;
+      perspective: 800px;
+      touch-action: pan-y;
+      cursor: pointer;
+    }
+
+    .photo-card {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 4px solid #3d2612;
+      border-radius: 8px;
+      object-fit: cover;
+      background-color: #fff;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+      transition: transform 0.4s ease, opacity 0.4s ease;
+      user-select: none;
+    }
+
+    .photo-card.card-top { transform: translateZ(0px) rotate(0deg); z-index: 3; }
+    .photo-card.card-mid { transform: translateY(6px) scale(0.95) rotate(2deg); z-index: 2; opacity: 0.85; }
+    .photo-card.card-back { transform: translateY(12px) scale(0.9) rotate(-2deg); z-index: 1; opacity: 0.7; }
+
+    .swiper-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+    }
+
+    .swipe-btn {
+      width: auto;
+      padding: 6px 14px;
+      font-size: 11px;
+      margin: 0;
+    }
+
+    .comment-box {
+      background-color: #e8f5e9;
+      border: 2px solid #2e7d32;
+      border-radius: 6px;
+      padding: 12px;
+      margin-top: 15px;
+      text-align: left;
+    }
+
+    textarea {
+      width: 100%;
+      height: 70px;
+      border: 2px solid #3d2612;
+      border-radius: 6px;
+      font-family: 'ZCOOL KuaiLe', 'Zen Maru Gothic', sans-serif;
+      font-size: 13px;
+      line-height: 1.6;
+      padding: 8px;
+      margin-top: 6px;
+      margin-bottom: 8px;
+      box-sizing: border-box;
+      resize: vertical;
+      background-color: #ffffff;
+    }
+
+    iframe { width: 100%; height: 220px; border: 3px solid #3d2612; margin: 10px 0; border-radius: 6px; }
+    audio { width: 100%; margin: 10px 0; }
+
+    .progress-bar {
+      font-size: 11px;
+      color: #ffd700;
+      margin-bottom: 5px;
+      font-family: 'Press Start 2P', monospace;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="progress-bar" id="game-progress">STAGE: GATEKEEPER QUIZ</div>
+
+  <div class="deck-container">
+
+    <!-- 1. INVITATION CARD -->
+    <div id="invitation-screen" class="opcg-card draw-card-anim">
+      <div class="couple-banner">
+        ✨ Eunice & Herman ✨
+      </div>
+
+      <div class="card-header">
+        <span class="card-cost">Y2</span>
+        <span class="card-type">QUEST START</span>
+        <span>🏴‍☠️</span>
+      </div>
+      <h1>☠️ Grand Line Voyage ☠️</h1>
+      <p>Ahoy Matey! Draw cards to answer the Year 2 Quiz and unlock your Log Pose timeline!</p>
+      <button class="pixel-btn" onclick="startQuiz()">DRAW FIRST CARD 🎴</button>
+    </div>
+
+    <!-- 2. QUIZ CARD -->
+    <div id="quiz-screen" class="opcg-card hidden">
+      <div class="card-header">
+        <span class="card-cost" id="quiz-cost-badge">Q1</span>
+        <span class="card-type">EVENT CARD</span>
+        <span id="quiz-card-no">1/11</span>
+      </div>
+      <h1 id="quiz-question-title">Question...</h1>
+      <div id="quiz-options"></div>
+      <p id="quiz-status" style="color: #b71c1c; font-size: 11px;"></p>
+    </div>
+
+    <!-- 3. TIMELINE MEMORY CARD -->
+    <div id="timeline-screen" class="opcg-card hidden">
+      <div class="card-header">
+        <span class="card-cost" id="memory-date-badge">DATE</span>
+        <span class="card-type">LOG POSE MEMORY</span>
+        <span id="memory-counter">1/15</span>
+      </div>
+      <h1 id="memory-title">Memory Title</h1>
+      <p id="memory-message">Memory message...</p>
+
+      <!-- Dynamic Media Container -->
+      <div id="memory-media-container"></div>
+
+      <!-- Comment Box -->
+      <div class="comment-box">
+        <label style="font-size: 13px; color: #1b5e20; font-weight: bold;">🍖 Logbook Entry:</label>
+        <textarea id="comment-input" placeholder="Type your thoughts on this memory..."></textarea>
+        <button class="pixel-btn" style="background-color: #2e7d32; border-color: #1b5e20; box-shadow: 0 3px 0 #0d3810;" onclick="saveCurrentComment()">LOG THOUGHT 📜</button>
+        <p id="saved-comment-status" style="color: #1b5e20; font-size: 11px; margin-top: 3px;"></p>
+      </div>
+
+      <button class="pixel-btn" style="margin-top: 15px;" onclick="nextMemoryCard()">DRAW NEXT LOG POSE 🧭 ➡️</button>
+    </div>
+
+    <!-- 4. FINAL TREASURE CARD -->
+    <div id="final-screen" class="opcg-card hidden">
+      <div class="card-header">
+        <span class="card-cost">❤️</span>
+        <span class="card-type">2ND ANNIVERSARY</span>
+        <span>✨</span>
+      </div>
+      
+      <h1 style="color: #b71c1c; font-size: 20px; margin-top: 15px;">💕 Happy 2nd Anniversary! 💕</h1>
+      
+      <p style="font-size: 14px; line-height: 1.85; color: #4a2c11; margin: 15px 0;">
+        Thank you for making Year 2 so special! <br><br>
+        Every single memory with you is precious, and I can't wait to continue our journey into Year 3 together. <br><br>
+        I love you so much! ✨
+      </p>
+
+      <p id="email-send-status" style="font-size: 11px; color: #2e7d32; font-weight: bold; margin-top: 10px;">
+        ✉️ Sending your quiz & logbook entries to Eunice...
+      </p>
+    </div>
+
+  </div>
+
+  <script src="quiz-data.js"></script>
+  <script src="timeline-data.js"></script>
+  <script>
+    let currentQ = 0;
+    let currentMemIndex = 0;
+    let photoIndex = 0;
+    let activePhotos = [];
+
+    // Global Store to record responses
+    let userFeedback = {
+      quizAnswers: {},
+      logbookComments: {}
+    };
+
+    function startQuiz() {
+      document.getElementById('invitation-screen').classList.add('hidden');
+      document.getElementById('quiz-screen').classList.remove('hidden');
+      drawQuizCard();
+    }
+
+    function triggerCardAnimation(element) {
+      element.classList.remove('draw-card-anim');
+      void element.offsetWidth;
+      element.classList.add('draw-card-anim');
+    }
+
+    function drawQuizCard() {
+      if (typeof quizQuestions === 'undefined' || quizQuestions.length === 0) {
+        document.getElementById('quiz-status').innerText = "Error: quiz-data.js is missing or empty!";
+        return;
+      }
+
+      if (currentQ >= quizQuestions.length) {
+        startTimeline();
+        return;
+      }
+
+      let cardElem = document.getElementById('quiz-screen');
+      triggerCardAnimation(cardElem);
+
+      let q = quizQuestions[currentQ];
+      document.getElementById('quiz-cost-badge').innerText = `Q${currentQ + 1}`;
+      document.getElementById('quiz-card-no').innerText = `${currentQ + 1}/${quizQuestions.length}`;
+      document.getElementById('quiz-question-title').innerText = q.question;
+      
+      let optsDiv = document.getElementById('quiz-options');
+      optsDiv.innerHTML = '';
+
+      if (q.type === 'open') {
+        let input = document.createElement('textarea');
+        input.id = 'open-quiz-answer';
+        input.placeholder = q.placeholder || 'Type your response here...';
+        
+        let btn = document.createElement('button');
+        btn.className = 'pixel-btn';
+        btn.innerText = 'DRAW NEXT CARD 🎴';
+        btn.onclick = () => {
+          let val = document.getElementById('open-quiz-answer').value;
+          if (!val.trim()) {
+            alert('Please submit a response before drawing the next card!');
+            return;
+          }
+          userFeedback.quizAnswers[`Quiz Q${currentQ + 1}: ${q.question}`] = val;
+          currentQ++;
+          drawQuizCard();
+        };
+
+        optsDiv.appendChild(input);
+        optsDiv.appendChild(btn);
+      } else {
+        q.options.forEach((opt) => {
+          let btn = document.createElement('button');
+          btn.className = 'pixel-btn';
+          btn.innerText = opt;
+          btn.onclick = () => {
+            userFeedback.quizAnswers[`Quiz Q${currentQ + 1}: ${q.question}`] = opt;
+            currentQ++;
+            drawQuizCard();
+          };
+          optsDiv.appendChild(btn);
+        });
+      }
+    }
+
+    function startTimeline() {
+      document.getElementById('quiz-screen').classList.add('hidden');
+      document.getElementById('timeline-screen').classList.remove('hidden');
+      document.getElementById('game-progress').innerText = "STAGE: LOG POSE TIMELINE";
+      renderMemoryCard();
+    }
+
+    function parseMedia(singleField, arrayField) {
+      let results = [];
+      if (Array.isArray(arrayField)) results = results.concat(arrayField);
+      else if (typeof arrayField === 'string' && arrayField.trim()) results.push(arrayField);
+      
+      if (Array.isArray(singleField)) results = results.concat(singleField);
+      else if (typeof singleField === 'string' && singleField.trim()) results.push(singleField);
+      
+      return results;
+    }
+
+    function renderMemoryCard() {
+      if (typeof memoryTimeline === 'undefined' || !Array.isArray(memoryTimeline)) {
+        alert("Error: memoryTimeline not found in timeline-data.js!");
+        return;
+      }
+
+      if (currentMemIndex >= memoryTimeline.length) {
+        showFinalScreens();
+        return;
+      }
+
+      let cardElem = document.getElementById('timeline-screen');
+      triggerCardAnimation(cardElem);
+
+      let mem = memoryTimeline[currentMemIndex];
+      let commentKey = `Memory #${currentMemIndex + 1} - ${mem.title || ''}`;
+
+      document.getElementById('memory-date-badge').innerText = mem.date || 'LOG';
+      document.getElementById('memory-counter').innerText = `${currentMemIndex + 1}/${memoryTimeline.length}`;
+      document.getElementById('memory-title').innerText = mem.title || '';
+      document.getElementById('memory-message').innerText = mem.message || '';
+      
+      document.getElementById('comment-input').value = userFeedback.logbookComments[commentKey] || '';
+      document.getElementById('saved-comment-status').innerText = userFeedback.logbookComments[commentKey] ? 'Logged!' : '';
+
+      let mediaDiv = document.getElementById('memory-media-container');
+      mediaDiv.innerHTML = '';
+
+      activePhotos = parseMedia(mem.photo, mem.photos);
+      photoIndex = 0;
+
+      if (activePhotos.length > 0) {
+        let deckContainer = document.createElement('div');
+        deckContainer.className = 'photo-deck-container';
+        deckContainer.id = 'photo-deck';
+        deckContainer.onclick = (e) => nextPhoto(e);
+
+        renderPhotoDeck(deckContainer);
+        mediaDiv.appendChild(deckContainer);
+
+        if (activePhotos.length > 1) {
+          let swiperControls = document.createElement('div');
+          swiperControls.className = 'swiper-controls';
+          swiperControls.innerHTML = `
+            <button class="pixel-btn swipe-btn" onclick="prevPhoto(event)">◀ PREV PHOTO</button>
+            <span style="font-size:11px; font-weight:bold;" id="photo-counter-text">1/${activePhotos.length} (Swipe/Click)</span>
+            <button class="pixel-btn swipe-btn" onclick="nextPhoto(event)">NEXT PHOTO ▶</button>
+          `;
+          mediaDiv.appendChild(swiperControls);
+          setupSwipeGestures(deckContainer);
+        }
+      }
+
+      let audios = parseMedia(mem.audio, mem.audios);
+      audios.forEach(a => {
+        let audioEl = document.createElement('audio');
+        audioEl.controls = true;
+        audioEl.src = a;
+        mediaDiv.appendChild(audioEl);
+      });
+
+      let ytubes = parseMedia(mem.youtubeId, mem.youtubeIds);
+      ytubes.forEach(y => {
+        let iframe = document.createElement('iframe');
+        iframe.src = `https://www.youtube.com/embed/${y}`;
+        iframe.frameBorder = "0";
+        iframe.allowFullscreen = true;
+        mediaDiv.appendChild(iframe);
+      });
+    }
+
+    function renderPhotoDeck(container) {
+      container.innerHTML = '';
+      if (activePhotos.length === 0) return;
+
+      for (let i = 0; i < Math.min(3, activePhotos.length); i++) {
+        let actualIdx = (photoIndex + i) % activePhotos.length;
+        let img = document.createElement('img');
+        img.src = activePhotos[actualIdx];
+        img.className = 'photo-card ' + (i === 0 ? 'card-top' : i === 1 ? 'card-mid' : 'card-back');
+        img.onerror = function() { this.alt = 'Image not found: ' + activePhotos[actualIdx]; };
+        container.appendChild(img);
+      }
+
+      let counterEl = document.getElementById('photo-counter-text');
+      if (counterEl) {
+        counterEl.innerText = `${photoIndex + 1}/${activePhotos.length} (Swipe/Click)`;
+      }
+    }
+
+    function nextPhoto(e) {
+      if (e) e.stopPropagation();
+      if (activePhotos.length <= 1) return;
+      photoIndex = (photoIndex + 1) % activePhotos.length;
+      let deck = document.getElementById('photo-deck');
+      if (deck) renderPhotoDeck(deck);
+    }
+
+    function prevPhoto(e) {
+      if (e) e.stopPropagation();
+      if (activePhotos.length <= 1) return;
+      photoIndex = (photoIndex - 1 + activePhotos.length) % activePhotos.length;
+      let deck = document.getElementById('photo-deck');
+      if (deck) renderPhotoDeck(deck);
+    }
+
+    function setupSwipeGestures(element) {
+      let touchStartX = 0;
+      let touchEndX = 0;
+
+      element.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      }, { passive: true });
+
+      element.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        if (touchStartX - touchEndX > 40) {
+          nextPhoto();
+        } else if (touchEndX - touchStartX > 40) {
+          prevPhoto();
+        }
+      }, { passive: true });
+    }
+
+    function saveCurrentComment() {
+      let text = document.getElementById('comment-input').value;
+      if (text) {
+        let memTitle = memoryTimeline[currentMemIndex].title || `Memory #${currentMemIndex + 1}`;
+        let commentKey = `Memory #${currentMemIndex + 1} - ${memTitle}`;
+        userFeedback.logbookComments[commentKey] = text;
+        document.getElementById('saved-comment-status').innerText = "Logged in Ship Ledger!";
+      }
+    }
+
+    function nextMemoryCard() {
+      let text = document.getElementById('comment-input').value;
+      if (text.trim()) {
+        let memTitle = memoryTimeline[currentMemIndex].title || `Memory #${currentMemIndex + 1}`;
+        let commentKey = `Memory #${currentMemIndex + 1} - ${memTitle}`;
+        userFeedback.logbookComments[commentKey] = text;
+      }
+      currentMemIndex++;
+      renderMemoryCard();
+    }
+
+    function sendAllResponsesToEmail() {
+      let payload = {
+        _subject: "❤️ Herman's Responses to Year 2 Quest & Logbook!",
+        ...userFeedback.quizAnswers,
+        ...userFeedback.logbookComments
+      };
+
+      fetch("https://formsubmit.co/ajax/lllamwy17@gmail.com", {
+        method: "POST",
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('email-send-status').innerText = "✉️ All answers & logbook thoughts have been sent to your email!";
+      })
+      .catch(error => {
+        document.getElementById('email-send-status').innerText = "⚠️ Logged responses locally (email delivery failed).";
+      });
+    }
+
+    function showFinalScreens() {
+      document.getElementById('timeline-screen').classList.add('hidden');
+      document.getElementById('final-screen').classList.remove('hidden');
+      document.getElementById('game-progress').innerText = "STAGE: GRAND LINE TREASURE";
+      
+      triggerCardAnimation(document.getElementById('final-screen'));
+      sendAllResponsesToEmail();
+    }
+  </script>
+</body>
+</html>
